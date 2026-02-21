@@ -1,7 +1,5 @@
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Plus } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function LeadsPage() {
@@ -14,15 +12,11 @@ export default async function LeadsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div>
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Leads</h2>
-          <p className="text-muted-foreground">Manage and convert your leads</p>
+          <p className="text-muted-foreground">View your leads</p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Lead
-        </Button>
       </div>
 
       {error ? (
@@ -61,14 +55,6 @@ export default async function LeadsPage() {
                       <p className="text-sm text-muted-foreground">{lead.source}</p>
                     </div>
                   )}
-                </div>
-                <div className="mt-4 flex gap-2">
-                  <Button variant="outline" size="sm">
-                    Convert to Client
-                  </Button>
-                  <Button variant="outline" size="sm">
-                    View Details
-                  </Button>
                 </div>
               </CardContent>
             </Card>

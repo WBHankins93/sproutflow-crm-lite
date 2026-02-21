@@ -1,7 +1,6 @@
-import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Plus, FileText, Download } from 'lucide-react'
+import { FileText } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
 
 export default async function DocumentsPage() {
@@ -22,15 +21,11 @@ export default async function DocumentsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div>
         <div>
           <h2 className="text-3xl font-bold tracking-tight">Documents</h2>
-          <p className="text-muted-foreground">Manage and organize your documents</p>
+          <p className="text-muted-foreground">View your documents</p>
         </div>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Upload Document
-        </Button>
       </div>
 
       {error ? (
@@ -67,10 +62,6 @@ export default async function DocumentsPage() {
                   <p className="text-xs text-muted-foreground">
                     Uploaded {new Date(doc.created_at).toLocaleDateString()}
                   </p>
-                  <Button variant="outline" size="sm" className="w-full mt-2">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download
-                  </Button>
                 </div>
               </CardContent>
             </Card>
