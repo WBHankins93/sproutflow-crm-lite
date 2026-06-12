@@ -50,7 +50,7 @@ async function expectRedirect(path, location) {
   }
 }
 
-const server = spawn('npm', ['run', 'start', '--', '--hostname', '127.0.0.1', '--port', String(port)], {
+const server = spawn(process.execPath, ['node_modules/next/dist/bin/next', 'start', '--hostname', '127.0.0.1', '--port', String(port)], {
   env: {
     ...process.env,
     PORT: String(port),
@@ -63,6 +63,8 @@ const server = spawn('npm', ['run', 'start', '--', '--hostname', '127.0.0.1', '-
 server.stdout.on('data', (chunk) => process.stdout.write(chunk))
 server.stderr.on('data', (chunk) => process.stderr.write(chunk))
 
+let exitCode = 0
+
 try {
   await waitForServer()
   await expectHtml('/demo', 'Demo Workspace')
@@ -74,6 +76,14 @@ try {
   await expectRedirect('/clients', '/login')
   await expectRedirect('/settings', '/login')
   console.log('Smoke tests passed')
+} catch (error) {
+  exitCode = 1
+  console.error(error)
 } finally {
   server.kill('SIGTERM')
+  await Promise.race([
+    new Promise((resolve) => server.once('close', resolve)),
+    wait(2_000),
+  ])
+  process.exit(exitCode)
 }
