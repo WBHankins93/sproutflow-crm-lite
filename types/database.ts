@@ -34,6 +34,7 @@ export interface Database {
           avatar_url?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       clients: {
         Row: {
@@ -43,6 +44,7 @@ export interface Database {
           phone: string | null
           company: string | null
           status: string
+          follow_up_date: string | null
           assigned_to: string | null
           created_at: string
           updated_at: string
@@ -54,6 +56,7 @@ export interface Database {
           phone?: string | null
           company?: string | null
           status?: string
+          follow_up_date?: string | null
           assigned_to?: string | null
           created_at?: string
           updated_at?: string
@@ -65,10 +68,12 @@ export interface Database {
           phone?: string | null
           company?: string | null
           status?: string
+          follow_up_date?: string | null
           assigned_to?: string | null
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       deals: {
         Row: {
@@ -104,6 +109,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       leads: {
         Row: {
@@ -113,6 +119,7 @@ export interface Database {
           phone: string | null
           source: string | null
           status: string
+          follow_up_date: string | null
           assigned_to: string | null
           created_at: string
           updated_at: string
@@ -124,6 +131,7 @@ export interface Database {
           phone?: string | null
           source?: string | null
           status?: string
+          follow_up_date?: string | null
           assigned_to?: string | null
           created_at?: string
           updated_at?: string
@@ -135,10 +143,39 @@ export interface Database {
           phone?: string | null
           source?: string | null
           status?: string
+          follow_up_date?: string | null
           assigned_to?: string | null
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
+      }
+      notes: {
+        Row: {
+          id: string
+          body: string
+          lead_id: string | null
+          client_id: string | null
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          body: string
+          lead_id?: string | null
+          client_id?: string | null
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          body?: string
+          lead_id?: string | null
+          client_id?: string | null
+          created_by?: string | null
+          created_at?: string
+        }
+        Relationships: []
       }
       documents: {
         Row: {
@@ -171,6 +208,7 @@ export interface Database {
           uploaded_by?: string
           created_at?: string
         }
+        Relationships: []
       }
       team_members: {
         Row: {
@@ -191,7 +229,12 @@ export interface Database {
           role?: 'admin' | 'agent'
           joined_at?: string
         }
+        Relationships: []
       }
     }
+    Views: Record<string, never>
+    Functions: Record<string, never>
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }

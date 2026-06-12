@@ -21,10 +21,20 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import { Plus } from 'lucide-react'
-import { createClientAction } from '@/app/(dashboard)/clients/actions'
+import { Pencil } from 'lucide-react'
+import { updateLeadAction } from '@/app/(dashboard)/leads/actions'
 
-export function AddClientDialog() {
+interface Lead {
+  id: string
+  name: string
+  email: string | null
+  phone: string | null
+  source: string | null
+  status: string
+  follow_up_date: string | null
+}
+
+export function EditLeadDialog({ lead }: { lead: Lead }) {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -36,7 +46,7 @@ export function AddClientDialog() {
     setError(null)
 
     const formData = new FormData(e.currentTarget)
-    const result = await createClientAction(formData)
+    const result = await updateLeadAction(lead.id, formData)
 
     if (result.error) {
       setError(result.error)
@@ -50,80 +60,83 @@ export function AddClientDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <Plus className="mr-2 h-4 w-4" />
-          Add Client
+        <Button variant="outline">
+          <Pencil className="mr-2 h-4 w-4" />
+          Edit
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add New Client</DialogTitle>
+            <DialogTitle>Edit Lead</DialogTitle>
             <DialogDescription>
-              Enter the client information below. Name is required.
+              Update the lead information below. Name is required.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
             <div className="grid gap-2">
-              <Label htmlFor="name">
+              <Label htmlFor="edit-name">
                 Name <span className="text-destructive">*</span>
               </Label>
               <Input
-                id="name"
+                id="edit-name"
                 name="name"
-                placeholder="John Doe"
+                defaultValue={lead.name}
                 required
                 disabled={loading}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="edit-email">Email</Label>
               <Input
-                id="email"
+                id="edit-email"
                 name="email"
                 type="email"
-                placeholder="john@example.com"
+                defaultValue={lead.email || ''}
                 disabled={loading}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="phone">Phone</Label>
+              <Label htmlFor="edit-phone">Phone</Label>
               <Input
-                id="phone"
+                id="edit-phone"
                 name="phone"
                 type="tel"
-                placeholder="(555) 123-4567"
+                defaultValue={lead.phone || ''}
                 disabled={loading}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="company">Company</Label>
+              <Label htmlFor="edit-source">Source</Label>
               <Input
-                id="company"
-                name="company"
-                placeholder="Acme Inc."
+                id="edit-source"
+                name="source"
+                defaultValue={lead.source || ''}
                 disabled={loading}
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="status">Status</Label>
-              <Select name="status" defaultValue="active" disabled={loading}>
+              <Label htmlFor="edit-status">Status</Label>
+              <Select name="status" defaultValue={lead.status} disabled={loading}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="prospect">Prospect</SelectItem>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="contacted">Contacted</SelectItem>
+                  <SelectItem value="qualified">Qualified</SelectItem>
+                  <SelectItem value="converted">Converted</SelectItem>
+                  <SelectItem value="lost">Lost</SelectItem>
                 </SelectContent>
               </Select>
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="follow_up_date">Next Follow-up</Label>
+              <Label htmlFor="edit-follow-up-date">Next Follow-up</Label>
               <Input
-                id="follow_up_date"
+                id="edit-follow-up-date"
                 name="follow_up_date"
                 type="date"
+                defaultValue={lead.follow_up_date || ''}
                 disabled={loading}
               />
             </div>
@@ -143,7 +156,7 @@ export function AddClientDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Adding...' : 'Add Client'}
+              {loading ? 'Saving...' : 'Save Changes'}
             </Button>
           </DialogFooter>
         </form>

@@ -2,20 +2,47 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
+  const pathname = request.nextUrl.pathname
+  const isPublicPath = pathname.startsWith('/login') || pathname.startsWith('/demo') || pathname.startsWith('/_next')
+  const redirectToLogin = () => {
+    const url = request.nextUrl.clone()
+    url.pathname = '/login'
+    return NextResponse.redirect(url)
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
 
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+  if (!supabaseUrl || !supabaseAnonKey) {
+    return isPublicPath ? supabaseResponse : redirectToLogin()
+  }
+
+  const hasSupabaseAuthCookie = request.cookies
+    .getAll()
+    .some(
+      ({ name }) =>
+        name.startsWith('sb-') &&
+        name.includes('-auth-token')
+    )
+
+  if (!hasSupabaseAuthCookie) {
+    return isPublicPath ? supabaseResponse : redirectToLogin()
+  }
+
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    supabaseUrl,
+    supabaseAnonKey,
     {
       cookies: {
         getAll() {
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value, options }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
           supabaseResponse = NextResponse.next({
             request,
           })
@@ -31,19 +58,17 @@ export async function updateSession(request: NextRequest) {
   // supabase.auth.getUser(). A simple mistake could make it very hard to debug
   // issues with users being randomly logged out.
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const response = await supabase.auth.getUser()
+    user = response.data.user
+  } catch {
+    return isPublicPath ? supabaseResponse : redirectToLogin()
+  }
 
-  if (
-    !user &&
-    !request.nextUrl.pathname.startsWith('/login') &&
-    !request.nextUrl.pathname.startsWith('/_next')
-  ) {
+  if (!user && !isPublicPath) {
     // no user, potentially respond by redirecting the user to the login page
-    const url = request.nextUrl.clone()
-    url.pathname = '/login'
-    return NextResponse.redirect(url)
+    return redirectToLogin()
   }
 
   // IMPORTANT: You *must* return the supabaseResponse object as it is. If you're

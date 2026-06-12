@@ -22,9 +22,9 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 import { Plus } from 'lucide-react'
-import { createClientAction } from '@/app/(dashboard)/clients/actions'
+import { createLeadAction } from '@/app/(dashboard)/leads/actions'
 
-export function AddClientDialog() {
+export function AddLeadDialog() {
   const [open, setOpen] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -36,7 +36,7 @@ export function AddClientDialog() {
     setError(null)
 
     const formData = new FormData(e.currentTarget)
-    const result = await createClientAction(formData)
+    const result = await createLeadAction(formData)
 
     if (result.error) {
       setError(result.error)
@@ -52,15 +52,15 @@ export function AddClientDialog() {
       <DialogTrigger asChild>
         <Button>
           <Plus className="mr-2 h-4 w-4" />
-          Add Client
+          Add Lead
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add New Client</DialogTitle>
+            <DialogTitle>Add New Lead</DialogTitle>
             <DialogDescription>
-              Enter the client information below. Name is required.
+              Enter the lead information below. Name is required.
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -97,24 +97,26 @@ export function AddClientDialog() {
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="company">Company</Label>
+              <Label htmlFor="source">Source</Label>
               <Input
-                id="company"
-                name="company"
-                placeholder="Acme Inc."
+                id="source"
+                name="source"
+                placeholder="Website, Referral, etc."
                 disabled={loading}
               />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="status">Status</Label>
-              <Select name="status" defaultValue="active" disabled={loading}>
+              <Select name="status" defaultValue="new" disabled={loading}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select status" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="prospect">Prospect</SelectItem>
+                  <SelectItem value="new">New</SelectItem>
+                  <SelectItem value="contacted">Contacted</SelectItem>
+                  <SelectItem value="qualified">Qualified</SelectItem>
+                  <SelectItem value="converted">Converted</SelectItem>
+                  <SelectItem value="lost">Lost</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -143,7 +145,7 @@ export function AddClientDialog() {
               Cancel
             </Button>
             <Button type="submit" disabled={loading}>
-              {loading ? 'Adding...' : 'Add Client'}
+              {loading ? 'Adding...' : 'Add Lead'}
             </Button>
           </DialogFooter>
         </form>
