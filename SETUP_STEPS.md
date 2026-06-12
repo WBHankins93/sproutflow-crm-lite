@@ -28,12 +28,13 @@ npm run dev
 ```
 
 ## 4. Access the Application
-- Open http://localhost:3000
+- Open http://localhost:3000/demo for the public walkthrough
+- Open http://localhost:3000 for the authenticated CRM
 - You'll be redirected to `/login`
 - Log in with your Supabase user credentials
 
 ## What You'll See
-- **Without Supabase setup**: The UI will load but show errors when trying to authenticate
+- **Without Supabase setup**: The `/demo` walkthrough works; authenticated pages redirect to login
 - **With Supabase setup**: Full functionality - login, dashboard, and all features
 
 ## Next Steps After Setup

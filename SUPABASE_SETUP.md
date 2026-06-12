@@ -24,9 +24,9 @@ Follow these steps to set up your Supabase project for Sproutflow CRM Lite.
 
 ## Step 3: Set Up Environment Variables
 
-1. Copy `.env.local.example` to `.env.local`:
+1. Copy `.env.example` to `.env.local`:
    ```bash
-   cp .env.local.example .env.local
+   cp .env.example .env.local
    ```
 
 2. Open `.env.local` and replace the placeholder values:

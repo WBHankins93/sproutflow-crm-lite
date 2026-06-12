@@ -1,16 +1,46 @@
 # Sproutflow CRM Lite
 
-Sproutflow CRM Lite is the stripped-down CRM for clients that need a simple system of record without the heavier workflows in the full CRM.
+Sproutflow CRM Lite is a lean relationship tracker for small teams that need a simple system of record: leads, clients, notes, follow-ups, and a clean daily dashboard. It is the public, barebones version of the larger Sproutflow CRM platform.
 
-## Current MVP Scope
+## Demo
+
+Run the app and open the seeded walkthrough:
+
+```bash
+npm install
+npm run dev
+```
+
+Then visit [http://localhost:3000/demo](http://localhost:3000/demo).
+
+The demo does not require Supabase credentials. It uses local in-browser sample data so reviewers can try the core workflow immediately:
+
+- Review dashboard metrics and follow-ups
+- Open leads and clients
+- Add demo notes
+- Convert a lead into a client
+
+## MVP Scope
+
+Included:
 
 - Supabase email/password authentication
 - Dashboard with client, lead, and follow-up summaries
-- Lead CRUD with status, source, follow-up date, notes, and conversion to client
-- Client CRUD with status, company, follow-up date, and notes
+- Lead CRUD with source, status, follow-up date, notes, and conversion to client
+- Client CRUD with company, status, follow-up date, and notes
 - Basic settings page with team member visibility
+- Public `/demo` walkthrough with seeded data
 
-Intentionally out of scope for this lite MVP branch: deals, documents, commissions, messaging, policy tracking, carrier access, reports, and advanced team administration.
+Not included in the lite version:
+
+- Deals pipeline
+- Document storage
+- Commissions
+- Messaging
+- Policy tracking
+- Carrier access
+- Advanced reporting
+- Advanced team administration
 
 ## Database
 
@@ -26,6 +56,7 @@ Neon is available, but this codebase is already wired for Supabase. Keeping Supa
 
 ```bash
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
@@ -37,6 +68,8 @@ Required environment variables:
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
+
+Without real Supabase values, the authenticated app redirects to `/login` but cannot sign in. The `/demo` route remains available for walkthroughs.
 
 ## Database Setup
 
@@ -51,6 +84,21 @@ For an existing project that already ran the initial schema, run only:
 
 Then create the first user in Supabase Auth and assign the role in `public.users`.
 
+## Project Structure
+
+```text
+app/demo                         Public seeded demo
+app/(auth)                       Login flow
+app/(dashboard)                  Authenticated CRM pages and server actions
+components/demo                  Demo workspace UI
+components/leads                 Lead forms, lists, and conversion controls
+components/clients               Client forms and lists
+components/notes                 Shared notes UI
+lib/supabase                     Supabase client helpers
+supabase/migrations              Database migrations
+types/database.ts                Hand-maintained Supabase database shape
+```
+
 ## Verification
 
 ```bash
@@ -60,7 +108,7 @@ npm run build
 
 End-to-end smoke testing should cover login, dashboard, lead creation, lead notes, lead conversion, client editing, client notes, and sign out.
 
-## Phase Plan
+## Roadmap
 
 Phase 1: CRM-lite foundation
 - Strip full-CRM routes from the lite surface
@@ -79,3 +127,7 @@ Phase 3: Deployment
 - Set hosting environment variables
 - Smoke test auth and CRUD in production
 - Create release checklist for client onboarding
+
+## License
+
+Copyright (c) WBHankins93. All rights reserved.

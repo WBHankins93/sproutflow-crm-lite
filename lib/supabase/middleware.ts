@@ -3,7 +3,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 
 export async function updateSession(request: NextRequest) {
   const pathname = request.nextUrl.pathname
-  const isPublicPath = pathname.startsWith('/login') || pathname.startsWith('/_next')
+  const isPublicPath = pathname.startsWith('/login') || pathname.startsWith('/demo') || pathname.startsWith('/_next')
   const redirectToLogin = () => {
     const url = request.nextUrl.clone()
     url.pathname = '/login'
