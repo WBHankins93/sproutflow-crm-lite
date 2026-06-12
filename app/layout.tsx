@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Sproutflow CRM",
-  description: "CRM platform for managing clients, deals, and leads",
+  description: "Lite CRM for managing leads and clients",
 };
 
 export default function RootLayout({
