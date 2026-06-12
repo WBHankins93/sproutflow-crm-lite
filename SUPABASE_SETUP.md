@@ -1,6 +1,6 @@
 # Supabase Setup Guide
 
-Follow these steps to set up your Supabase project for the CRM platform.
+Follow these steps to set up your Supabase project for Sproutflow CRM Lite.
 
 ## Step 1: Create a Supabase Project
 
@@ -35,15 +35,14 @@ Follow these steps to set up your Supabase project for the CRM platform.
    NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key-here
    ```
 
-## Step 4: Run Database Migration
+## Step 4: Run Database Migrations
 
 1. In your Supabase dashboard, go to **SQL Editor** (in the sidebar)
 2. Click "New query"
-3. Open the file `supabase/migrations/001_initial_schema.sql` from this project
-4. Copy the entire contents of that file
-5. Paste it into the SQL Editor in Supabase
-6. Click "Run" (or press Cmd/Ctrl + Enter)
-7. You should see "Success. No rows returned" - this means the tables were created successfully
+3. For a fresh project, run `supabase/migrations/001_initial_schema.sql`
+4. Then run `supabase/migrations/002_crm_lite_workflow.sql`
+5. If your project already has the initial schema, run only `002_crm_lite_workflow.sql`
+6. You should see "Success. No rows returned" after each migration
 
 ## Step 5: Create Your First User
 
@@ -81,7 +80,8 @@ Follow these steps to set up your Supabase project for the CRM platform.
 2. Open [http://localhost:3000](http://localhost:3000)
 3. You should be redirected to `/login`
 4. Log in with the credentials you created
-5. You should see the dashboard!
+5. You should see the dashboard
+6. Create a lead, add a note, convert the lead to a client, and confirm the new client record opens
 
 ## Troubleshooting
 

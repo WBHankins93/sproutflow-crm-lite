@@ -13,7 +13,7 @@ npm install
    cp .env.local.example .env.local
    ```
 2. Edit `.env.local` with your Supabase credentials
-3. Run the database migration in Supabase SQL Editor (see SUPABASE_SETUP.md)
+3. Run the database migrations in Supabase SQL Editor (see SUPABASE_SETUP.md)
 
 ### Option B: New Supabase Project
 1. Follow the detailed guide in `SUPABASE_SETUP.md`
@@ -22,15 +22,12 @@ npm install
 4. Set up `.env.local` file
 5. Run the migration SQL
 
-## 3. Add Your Logo
-Replace `public/logo.png` with your actual logo file
-
-## 4. Start the Development Server
+## 3. Start the Development Server
 ```bash
 npm run dev
 ```
 
-## 5. Access the Application
+## 4. Access the Application
 - Open http://localhost:3000
 - You'll be redirected to `/login`
 - Log in with your Supabase user credentials
@@ -42,4 +39,5 @@ npm run dev
 ## Next Steps After Setup
 1. Create your first user in Supabase Authentication
 2. Set the user's role to 'admin' in the database
-3. Start adding clients, deals, and leads!
+3. Start adding leads and clients
+4. Use follow-up dates and notes to track daily activity
