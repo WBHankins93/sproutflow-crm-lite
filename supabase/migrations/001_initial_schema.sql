@@ -19,6 +19,7 @@ CREATE TABLE IF NOT EXISTS public.clients (
   phone TEXT,
   company TEXT,
   status TEXT DEFAULT 'active',
+  follow_up_date DATE,
   assigned_to UUID REFERENCES public.users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
@@ -45,9 +46,24 @@ CREATE TABLE IF NOT EXISTS public.leads (
   phone TEXT,
   source TEXT,
   status TEXT DEFAULT 'new',
+  follow_up_date DATE,
   assigned_to UUID REFERENCES public.users(id),
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Notes table
+CREATE TABLE IF NOT EXISTS public.notes (
+  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  body TEXT NOT NULL,
+  lead_id UUID REFERENCES public.leads(id) ON DELETE CASCADE,
+  client_id UUID REFERENCES public.clients(id) ON DELETE CASCADE,
+  created_by UUID REFERENCES public.users(id),
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  CONSTRAINT notes_single_parent CHECK (
+    (lead_id IS NOT NULL AND client_id IS NULL) OR
+    (lead_id IS NULL AND client_id IS NOT NULL)
+  )
 );
 
 -- Documents table
@@ -96,6 +112,7 @@ ALTER TABLE public.users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.clients ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.deals ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.leads ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.notes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.documents ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.team_members ENABLE ROW LEVEL SECURITY;
 
@@ -159,6 +176,19 @@ CREATE POLICY "Admins can delete leads" ON public.leads
       WHERE users.id = auth.uid() AND users.role = 'admin'
     )
   );
+
+-- Notes policies
+CREATE POLICY "Users can read all notes" ON public.notes
+  FOR SELECT USING (true);
+
+CREATE POLICY "Users can create notes" ON public.notes
+  FOR INSERT WITH CHECK (auth.uid() = created_by OR created_by IS NULL);
+
+CREATE POLICY "Users can update own notes" ON public.notes
+  FOR UPDATE USING (auth.uid() = created_by);
+
+CREATE POLICY "Users can delete own notes" ON public.notes
+  FOR DELETE USING (auth.uid() = created_by);
 
 -- Documents policies
 CREATE POLICY "Users can read all documents" ON public.documents

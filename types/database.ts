@@ -43,6 +43,7 @@ export interface Database {
           phone: string | null
           company: string | null
           status: string
+          follow_up_date: string | null
           assigned_to: string | null
           created_at: string
           updated_at: string
@@ -54,6 +55,7 @@ export interface Database {
           phone?: string | null
           company?: string | null
           status?: string
+          follow_up_date?: string | null
           assigned_to?: string | null
           created_at?: string
           updated_at?: string
@@ -65,6 +67,7 @@ export interface Database {
           phone?: string | null
           company?: string | null
           status?: string
+          follow_up_date?: string | null
           assigned_to?: string | null
           created_at?: string
           updated_at?: string
@@ -113,6 +116,7 @@ export interface Database {
           phone: string | null
           source: string | null
           status: string
+          follow_up_date: string | null
           assigned_to: string | null
           created_at: string
           updated_at: string
@@ -124,6 +128,7 @@ export interface Database {
           phone?: string | null
           source?: string | null
           status?: string
+          follow_up_date?: string | null
           assigned_to?: string | null
           created_at?: string
           updated_at?: string
@@ -135,9 +140,36 @@ export interface Database {
           phone?: string | null
           source?: string | null
           status?: string
+          follow_up_date?: string | null
           assigned_to?: string | null
           created_at?: string
           updated_at?: string
+        }
+      }
+      notes: {
+        Row: {
+          id: string
+          body: string
+          lead_id: string | null
+          client_id: string | null
+          created_by: string | null
+          created_at: string
+        }
+        Insert: {
+          id?: string
+          body: string
+          lead_id?: string | null
+          client_id?: string | null
+          created_by?: string | null
+          created_at?: string
+        }
+        Update: {
+          id?: string
+          body?: string
+          lead_id?: string | null
+          client_id?: string | null
+          created_by?: string | null
+          created_at?: string
         }
       }
       documents: {
