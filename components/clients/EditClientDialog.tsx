@@ -31,6 +31,7 @@ interface Client {
   phone: string | null
   company: string | null
   status: string
+  follow_up_date: string | null
 }
 
 export function EditClientDialog({ client }: { client: Client }) {
@@ -126,6 +127,16 @@ export function EditClientDialog({ client }: { client: Client }) {
                   <SelectItem value="prospect">Prospect</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-follow-up-date">Next Follow-up</Label>
+              <Input
+                id="edit-follow-up-date"
+                name="follow_up_date"
+                type="date"
+                defaultValue={client.follow_up_date || ''}
+                disabled={loading}
+              />
             </div>
             {error && (
               <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">

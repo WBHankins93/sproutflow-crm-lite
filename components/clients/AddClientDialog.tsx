@@ -118,6 +118,15 @@ export function AddClientDialog() {
                 </SelectContent>
               </Select>
             </div>
+            <div className="grid gap-2">
+              <Label htmlFor="follow_up_date">Next Follow-up</Label>
+              <Input
+                id="follow_up_date"
+                name="follow_up_date"
+                type="date"
+                disabled={loading}
+              />
+            </div>
             {error && (
               <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
                 {error}

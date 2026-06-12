@@ -1,29 +1,26 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { leadSchema, parseFormData } from '@/lib/crm/validation'
 import { revalidatePath } from 'next/cache'
 
 export async function createLeadAction(formData: FormData) {
   const supabase = await createClient()
-  
-  const name = formData.get('name') as string
-  const email = formData.get('email') as string | null
-  const phone = formData.get('phone') as string | null
-  const source = formData.get('source') as string | null
-  const status = formData.get('status') as string || 'new'
 
-  if (!name || name.trim() === '') {
-    return { error: 'Name is required' }
+  const parsed = parseFormData(leadSchema, formData)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || 'Invalid lead details' }
   }
 
   const { data, error } = await supabase
     .from('leads')
     .insert({
-      name: name.trim(),
-      email: email?.trim() || null,
-      phone: phone?.trim() || null,
-      source: source?.trim() || null,
-      status: status,
+      name: parsed.data.name,
+      email: parsed.data.email,
+      phone: parsed.data.phone,
+      source: parsed.data.source,
+      status: parsed.data.status,
+      follow_up_date: parsed.data.follow_up_date,
     })
     .select()
     .single()
@@ -39,25 +36,21 @@ export async function createLeadAction(formData: FormData) {
 
 export async function updateLeadAction(id: string, formData: FormData) {
   const supabase = await createClient()
-  
-  const name = formData.get('name') as string
-  const email = formData.get('email') as string | null
-  const phone = formData.get('phone') as string | null
-  const source = formData.get('source') as string | null
-  const status = formData.get('status') as string || 'new'
 
-  if (!name || name.trim() === '') {
-    return { error: 'Name is required' }
+  const parsed = parseFormData(leadSchema, formData)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || 'Invalid lead details' }
   }
 
   const { data, error } = await supabase
     .from('leads')
     .update({
-      name: name.trim(),
-      email: email?.trim() || null,
-      phone: phone?.trim() || null,
-      source: source?.trim() || null,
-      status: status,
+      name: parsed.data.name,
+      email: parsed.data.email,
+      phone: parsed.data.phone,
+      source: parsed.data.source,
+      status: parsed.data.status,
+      follow_up_date: parsed.data.follow_up_date,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)
@@ -89,4 +82,58 @@ export async function deleteLeadAction(id: string) {
   revalidatePath('/leads')
   revalidatePath('/dashboard')
   return { success: true }
+}
+
+export async function convertLeadToClientAction(id: string) {
+  const supabase = await createClient()
+
+  const { data: lead, error: leadError } = await supabase
+    .from('leads')
+    .select('*')
+    .eq('id', id)
+    .single()
+
+  if (leadError || !lead) {
+    return { error: leadError?.message || 'Lead not found' }
+  }
+
+  if (lead.status === 'converted') {
+    return { error: 'Lead has already been converted' }
+  }
+
+  const { data: client, error: clientError } = await supabase
+    .from('clients')
+    .insert({
+      name: lead.name,
+      email: lead.email,
+      phone: lead.phone,
+      company: lead.source,
+      status: 'active',
+      follow_up_date: lead.follow_up_date,
+      assigned_to: lead.assigned_to,
+    })
+    .select()
+    .single()
+
+  if (clientError) {
+    return { error: clientError.message }
+  }
+
+  const { error: updateError } = await supabase
+    .from('leads')
+    .update({
+      status: 'converted',
+      updated_at: new Date().toISOString(),
+    })
+    .eq('id', id)
+
+  if (updateError) {
+    return { error: updateError.message }
+  }
+
+  revalidatePath('/leads')
+  revalidatePath(`/leads/${id}`)
+  revalidatePath('/clients')
+  revalidatePath('/dashboard')
+  return { success: true, clientId: client.id }
 }

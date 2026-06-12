@@ -16,6 +16,7 @@ interface Lead {
   phone: string | null
   source: string | null
   status: string
+  follow_up_date: string | null
   created_at: string
   updated_at: string
 }
@@ -91,6 +92,11 @@ export function LeadsList({ leads }: LeadsListProps) {
                   )}
                   {lead.source && (
                     <p className="text-muted-foreground">Source: {lead.source}</p>
+                  )}
+                  {lead.follow_up_date && (
+                    <p className="text-muted-foreground">
+                      Follow-up: {new Date(`${lead.follow_up_date}T00:00:00`).toLocaleDateString()}
+                    </p>
                   )}
                   <div className="flex items-center gap-2 pt-2">
                     <Link

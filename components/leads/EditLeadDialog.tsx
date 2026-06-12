@@ -31,6 +31,7 @@ interface Lead {
   phone: string | null
   source: string | null
   status: string
+  follow_up_date: string | null
 }
 
 export function EditLeadDialog({ lead }: { lead: Lead }) {
@@ -128,6 +129,16 @@ export function EditLeadDialog({ lead }: { lead: Lead }) {
                   <SelectItem value="lost">Lost</SelectItem>
                 </SelectContent>
               </Select>
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="edit-follow-up-date">Next Follow-up</Label>
+              <Input
+                id="edit-follow-up-date"
+                name="follow_up_date"
+                type="date"
+                defaultValue={lead.follow_up_date || ''}
+                disabled={loading}
+              />
             </div>
             {error && (
               <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">

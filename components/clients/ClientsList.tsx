@@ -14,6 +14,7 @@ interface Client {
   phone: string | null
   company: string | null
   status: string
+  follow_up_date: string | null
   created_at: string
   updated_at: string
 }
@@ -89,6 +90,11 @@ export function ClientsList({ clients }: ClientsListProps) {
                   )}
                   {client.company && (
                     <p className="text-muted-foreground">Company: {client.company}</p>
+                  )}
+                  {client.follow_up_date && (
+                    <p className="text-muted-foreground">
+                      Follow-up: {new Date(`${client.follow_up_date}T00:00:00`).toLocaleDateString()}
+                    </p>
                   )}
                   <Link
                     href={`/clients/${client.id}`}

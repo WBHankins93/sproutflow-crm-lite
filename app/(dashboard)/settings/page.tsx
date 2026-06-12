@@ -14,9 +14,10 @@ type TeamUser = {
 
 type TeamMember = {
   id: string
+  user_id: string
   role: string
   joined_at: string
-  users: TeamUser | null
+  user: TeamUser | null
 }
 
 function getInitials(name?: string | null, email?: string | null) {
@@ -37,20 +38,24 @@ function getInitials(name?: string | null, email?: string | null) {
 export default async function SettingsPage() {
   const supabase = await createClient()
   
-  const { data: teamMembers, error } = await supabase
+  const { data: teamMemberRows, error } = await supabase
     .from('team_members')
-    .select(`
-      *,
-      users (
-        id,
-        email,
-        full_name,
-        avatar_url,
-        role
-      )
-    `)
+    .select('id, user_id, role, joined_at')
     .order('joined_at', { ascending: false })
 
+  const userIds = teamMemberRows?.map((member) => member.user_id) || []
+  const { data: users } = userIds.length > 0
+    ? await supabase
+      .from('users')
+      .select('id, email, full_name, avatar_url, role')
+      .in('id', userIds)
+    : { data: [] }
+
+  const usersById = new Map((users || []).map((user) => [user.id, user]))
+  const teamMembers: TeamMember[] = (teamMemberRows || []).map((member) => ({
+    ...member,
+    user: usersById.get(member.user_id) || null,
+  }))
   const memberCount = teamMembers?.length || 0
 
   return (
@@ -75,8 +80,8 @@ export default async function SettingsPage() {
               <p className="text-sm text-muted-foreground mb-4">
                 {memberCount} {memberCount === 1 ? 'member' : 'members'} in your team
               </p>
-              {(teamMembers as TeamMember[]).map((member) => {
-                const user = member.users
+              {teamMembers.map((member) => {
+                const user = member.user
                 if (!user) return null
                 
                 return (

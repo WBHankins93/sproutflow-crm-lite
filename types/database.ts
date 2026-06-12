@@ -34,6 +34,7 @@ export interface Database {
           avatar_url?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       clients: {
         Row: {
@@ -72,6 +73,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       deals: {
         Row: {
@@ -107,6 +109,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       leads: {
         Row: {
@@ -145,6 +148,7 @@ export interface Database {
           created_at?: string
           updated_at?: string
         }
+        Relationships: []
       }
       notes: {
         Row: {
@@ -171,6 +175,7 @@ export interface Database {
           created_by?: string | null
           created_at?: string
         }
+        Relationships: []
       }
       documents: {
         Row: {
@@ -203,6 +208,7 @@ export interface Database {
           uploaded_by?: string
           created_at?: string
         }
+        Relationships: []
       }
       team_members: {
         Row: {
@@ -223,7 +229,12 @@ export interface Database {
           role?: 'admin' | 'agent'
           joined_at?: string
         }
+        Relationships: []
       }
     }
+    Views: Record<string, never>
+    Functions: Record<string, never>
+    Enums: Record<string, never>
+    CompositeTypes: Record<string, never>
   }
 }

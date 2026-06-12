@@ -5,6 +5,7 @@ import Link from 'next/link'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
+  const today = new Date().toISOString().slice(0, 10)
   
   const { data: clients, count: clientsCount } = await supabase
     .from('clients')
@@ -18,6 +19,40 @@ export default async function DashboardPage() {
     .order('created_at', { ascending: false })
     .limit(5)
 
+  const { data: followUpClients } = await supabase
+    .from('clients')
+    .select('id, name, follow_up_date')
+    .not('follow_up_date', 'is', null)
+    .lte('follow_up_date', today)
+    .order('follow_up_date', { ascending: true })
+    .limit(5)
+
+  const { data: followUpLeads } = await supabase
+    .from('leads')
+    .select('id, name, follow_up_date')
+    .not('follow_up_date', 'is', null)
+    .neq('status', 'converted')
+    .lte('follow_up_date', today)
+    .order('follow_up_date', { ascending: true })
+    .limit(5)
+
+  const followUps = [
+    ...(followUpClients || []).map((client) => ({
+      id: client.id,
+      name: client.name,
+      follow_up_date: client.follow_up_date,
+      href: `/clients/${client.id}`,
+      type: 'Client',
+    })),
+    ...(followUpLeads || []).map((lead) => ({
+      id: lead.id,
+      name: lead.name,
+      follow_up_date: lead.follow_up_date,
+      href: `/leads/${lead.id}`,
+      type: 'Lead',
+    })),
+  ].sort((a, b) => (a.follow_up_date || '').localeCompare(b.follow_up_date || ''))
+
   return (
     <div className="space-y-6">
       <div>
@@ -25,7 +60,7 @@ export default async function DashboardPage() {
         <p className="text-muted-foreground">Welcome back! Here&apos;s what&apos;s happening.</p>
       </div>
       
-      <div className="grid gap-4 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
@@ -45,7 +80,47 @@ export default async function DashboardPage() {
             <p className="text-xs text-muted-foreground">Leads in your pipeline</p>
           </CardContent>
         </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Needs Follow-up</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{followUps.length}</div>
+            <p className="text-xs text-muted-foreground">Due today or earlier</p>
+          </CardContent>
+        </Card>
       </div>
+
+      {followUps.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Follow Up Next</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {followUps.slice(0, 5).map((item) => (
+                <Link
+                  key={`${item.type}-${item.id}`}
+                  href={item.href}
+                  className="flex items-center justify-between rounded-lg border p-3 transition-colors hover:bg-accent"
+                >
+                  <div>
+                    <p className="font-medium">{item.name}</p>
+                    <p className="text-sm text-muted-foreground">{item.type}</p>
+                  </div>
+                  <Badge variant="outline">
+                    {new Date(`${item.follow_up_date}T00:00:00`).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                  </Badge>
+                </Link>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="grid gap-4 md:grid-cols-2">
         {clients && clients.length > 0 && (

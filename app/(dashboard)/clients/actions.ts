@@ -1,29 +1,26 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { clientSchema, parseFormData } from '@/lib/crm/validation'
 import { revalidatePath } from 'next/cache'
 
 export async function createClientAction(formData: FormData) {
   const supabase = await createClient()
-  
-  const name = formData.get('name') as string
-  const email = formData.get('email') as string | null
-  const phone = formData.get('phone') as string | null
-  const company = formData.get('company') as string | null
-  const status = formData.get('status') as string || 'active'
 
-  if (!name || name.trim() === '') {
-    return { error: 'Name is required' }
+  const parsed = parseFormData(clientSchema, formData)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || 'Invalid client details' }
   }
 
   const { data, error } = await supabase
     .from('clients')
     .insert({
-      name: name.trim(),
-      email: email?.trim() || null,
-      phone: phone?.trim() || null,
-      company: company?.trim() || null,
-      status: status,
+      name: parsed.data.name,
+      email: parsed.data.email,
+      phone: parsed.data.phone,
+      company: parsed.data.company,
+      status: parsed.data.status,
+      follow_up_date: parsed.data.follow_up_date,
     })
     .select()
     .single()
@@ -39,25 +36,21 @@ export async function createClientAction(formData: FormData) {
 
 export async function updateClientAction(id: string, formData: FormData) {
   const supabase = await createClient()
-  
-  const name = formData.get('name') as string
-  const email = formData.get('email') as string | null
-  const phone = formData.get('phone') as string | null
-  const company = formData.get('company') as string | null
-  const status = formData.get('status') as string || 'active'
 
-  if (!name || name.trim() === '') {
-    return { error: 'Name is required' }
+  const parsed = parseFormData(clientSchema, formData)
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message || 'Invalid client details' }
   }
 
   const { data, error } = await supabase
     .from('clients')
     .update({
-      name: name.trim(),
-      email: email?.trim() || null,
-      phone: phone?.trim() || null,
-      company: company?.trim() || null,
-      status: status,
+      name: parsed.data.name,
+      email: parsed.data.email,
+      phone: parsed.data.phone,
+      company: parsed.data.company,
+      status: parsed.data.status,
+      follow_up_date: parsed.data.follow_up_date,
       updated_at: new Date().toISOString(),
     })
     .eq('id', id)

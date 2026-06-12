@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { EditClientDialog } from '@/components/clients/EditClientDialog'
 import { DeleteClientDialog } from '@/components/clients/DeleteClientDialog'
+import { NotesPanel } from '@/components/notes/NotesPanel'
 import { Mail, Phone, Building, Calendar } from 'lucide-react'
 
 export default async function ClientDetailPage({
@@ -23,6 +24,12 @@ export default async function ClientDetailPage({
   if (error || !client) {
     notFound()
   }
+
+  const { data: notes } = await supabase
+    .from('notes')
+    .select('id, body, created_at')
+    .eq('client_id', id)
+    .order('created_at', { ascending: false })
 
   return (
     <div className="space-y-6">
@@ -82,6 +89,21 @@ export default async function ClientDetailPage({
               <p className="text-sm font-medium mb-2">Status</p>
               <Badge variant="outline">{client.status}</Badge>
             </div>
+            {client.follow_up_date && (
+              <div className="flex items-center gap-3">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Next Follow-up</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(`${client.follow_up_date}T00:00:00`).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
@@ -113,6 +135,11 @@ export default async function ClientDetailPage({
           </CardContent>
         </Card>
       </div>
+
+      <NotesPanel
+        parent={{ type: 'client', id: client.id }}
+        notes={notes || []}
+      />
     </div>
   )
 }

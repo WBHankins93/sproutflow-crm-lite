@@ -4,6 +4,8 @@ import { createClient } from '@/lib/supabase/server'
 import { notFound } from 'next/navigation'
 import { EditLeadDialog } from '@/components/leads/EditLeadDialog'
 import { DeleteLeadDialog } from '@/components/leads/DeleteLeadDialog'
+import { ConvertLeadButton } from '@/components/leads/ConvertLeadButton'
+import { NotesPanel } from '@/components/notes/NotesPanel'
 import { Mail, Phone, Calendar, Tag } from 'lucide-react'
 
 export default async function LeadDetailPage({
@@ -24,6 +26,12 @@ export default async function LeadDetailPage({
     notFound()
   }
 
+  const { data: notes } = await supabase
+    .from('notes')
+    .select('id, body, created_at')
+    .eq('lead_id', id)
+    .order('created_at', { ascending: false })
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -32,6 +40,7 @@ export default async function LeadDetailPage({
           <p className="text-muted-foreground">Lead details and information</p>
         </div>
         <div className="flex gap-2">
+          <ConvertLeadButton leadId={lead.id} disabled={lead.status === 'converted'} />
           <EditLeadDialog lead={lead} />
           <DeleteLeadDialog leadId={lead.id} leadName={lead.name} />
         </div>
@@ -82,6 +91,21 @@ export default async function LeadDetailPage({
               <p className="text-sm font-medium mb-2">Status</p>
               <Badge variant="outline">{lead.status}</Badge>
             </div>
+            {lead.follow_up_date && (
+              <div className="flex items-center gap-3">
+                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <div>
+                  <p className="text-sm font-medium">Next Follow-up</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(`${lead.follow_up_date}T00:00:00`).toLocaleDateString('en-US', {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </p>
+                </div>
+              </div>
+            )}
             <div className="flex items-center gap-3">
               <Calendar className="h-5 w-5 text-muted-foreground" />
               <div>
@@ -113,6 +137,11 @@ export default async function LeadDetailPage({
           </CardContent>
         </Card>
       </div>
+
+      <NotesPanel
+        parent={{ type: 'lead', id: lead.id }}
+        notes={notes || []}
+      />
     </div>
   )
 }
