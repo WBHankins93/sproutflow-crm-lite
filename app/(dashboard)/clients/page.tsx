@@ -15,7 +15,7 @@ export default async function ClientsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Clients</h2>
+          <h2 className="font-display text-3xl font-semibold tracking-tight">Clients</h2>
           <p className="text-muted-foreground">Manage your client relationships</p>
         </div>
         <AddClientDialog />
