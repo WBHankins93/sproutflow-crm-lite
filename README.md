@@ -60,6 +60,7 @@ Then open **[localhost:3000/demo](http://localhost:3000/demo)** and:
 | Styling | Tailwind CSS 4 · shadcn/ui · Fraunces + Geist |
 | Data & Auth | Supabase (Postgres, Auth, Row-Level Security) |
 | Validation | Zod |
+| Testing | Vitest · React Testing Library · route smoke test |
 
 > **Why Supabase?** The codebase is already wired for Supabase, so auth, database, and future file storage live together — the fastest MVP path. Neon remains an option; if the umbrella standard moves to Neon, plan a separate migration branch with an auth decision first.
 
@@ -121,26 +122,26 @@ types/database.ts                Hand-maintained Supabase database shape
 
 ---
 
-## ✅ Verification
+## ✅ Verification & testing
 
 ```bash
 npm audit          # dependency check
 npm run lint       # eslint
+npm test           # Vitest unit + component suite
 npm run build      # production build
 npm run test:smoke # boots the build and probes key routes
 ```
 
-The smoke test starts the production build locally and verifies that:
+Two layers of automated testing run in CI:
 
-- `/demo` renders seeded walkthrough content
-- `/login` renders the sign-in form
-- protected routes redirect to `/login` without a session
+- **Unit / component** ([Vitest](https://vitest.dev) + React Testing Library) — covers validation schemas, helpers, and client-component behavior.
+- **Smoke (e2e-lite)** — boots the production build and checks that `/demo` and `/login` render and that protected routes redirect to `/login` without a session.
 
-> Authenticated end-to-end testing still requires a seeded Supabase project and test user.
+> 📐 **New features must ship with tests.** See **[TESTING.md](TESTING.md)** for the policy and how to add coverage. Authenticated end-to-end testing still requires a seeded Supabase project and test user (roadmap).
 
 ### Continuous integration
 
-GitHub Actions runs the same path on every pull request and push to `main`: `npm ci` → `npm audit` → `npm run lint` → `npm run build` → `npm run test:smoke`.
+GitHub Actions runs the same path on every pull request and push to `main`: `npm ci` → `npm audit` → `npm run lint` → `npm test` → `npm run build` → `npm run test:smoke`.
 
 ---
 
