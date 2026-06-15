@@ -1,6 +1,5 @@
 'use client'
 
-import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -13,16 +12,11 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Logo } from './Logo'
 import { createClient } from '@/lib/supabase/client'
+import { getInitials } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 
-interface HeaderProps {
-  title?: string
-  subtitle?: string
-  showBack?: boolean
-}
-
-export function Header({ title, subtitle, showBack = false }: HeaderProps) {
+export function Header() {
   const router = useRouter()
   const [user, setUser] = useState<{ email?: string; full_name?: string; avatar_url?: string } | null>(null)
   const supabase = createClient()
@@ -49,34 +43,9 @@ export function Header({ title, subtitle, showBack = false }: HeaderProps) {
     router.push('/login')
   }
 
-  const getInitials = (name?: string, email?: string) => {
-    if (name) {
-      return name
-        .split(' ')
-        .map((n) => n[0])
-        .join('')
-        .toUpperCase()
-        .slice(0, 2)
-    }
-    if (email) {
-      return email[0].toUpperCase()
-    }
-    return 'U'
-  }
-
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-[var(--header)] px-6">
-      <div className="flex items-center gap-4 flex-1">
-        {showBack && (
-          <Button variant="ghost" size="icon" onClick={() => router.back()}>
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-        )}
-        <div>
-          {title && <h1 className="text-lg font-semibold text-[var(--header-foreground)]">{title}</h1>}
-          {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
-        </div>
-      </div>
+      <div className="flex-1" />
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>

@@ -3,6 +3,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { Badge } from '@/components/ui/badge'
 import { Users2 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/server'
+import { getInitials } from '@/lib/utils'
 
 type TeamUser = {
   id: string
@@ -18,21 +19,6 @@ type TeamMember = {
   role: string
   joined_at: string
   user: TeamUser | null
-}
-
-function getInitials(name?: string | null, email?: string | null) {
-  if (name) {
-    return name
-      .split(' ')
-      .map((n) => n[0])
-      .join('')
-      .toUpperCase()
-      .slice(0, 2)
-  }
-  if (email) {
-    return email[0].toUpperCase()
-  }
-  return 'U'
 }
 
 export default async function SettingsPage() {
