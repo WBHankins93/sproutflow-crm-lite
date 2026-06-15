@@ -12,10 +12,17 @@ export default async function DashboardPage() {
     .select('*', { count: 'exact' })
     .order('created_at', { ascending: false })
     .limit(5)
-  
-  const { data: leads, count: leadsCount } = await supabase
+
+  // Open leads exclude converted/lost so the metric reflects the live pipeline.
+  const { count: openLeadsCount } = await supabase
     .from('leads')
-    .select('*', { count: 'exact' })
+    .select('id', { count: 'exact', head: true })
+    .not('status', 'in', '(converted,lost)')
+
+  const { data: leads } = await supabase
+    .from('leads')
+    .select('*')
+    .not('status', 'in', '(converted,lost)')
     .order('created_at', { ascending: false })
     .limit(5)
 
@@ -31,7 +38,7 @@ export default async function DashboardPage() {
     .from('leads')
     .select('id, name, follow_up_date')
     .not('follow_up_date', 'is', null)
-    .neq('status', 'converted')
+    .not('status', 'in', '(converted,lost)')
     .lte('follow_up_date', today)
     .order('follow_up_date', { ascending: true })
     .limit(5)
@@ -73,11 +80,11 @@ export default async function DashboardPage() {
         
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Leads</CardTitle>
+            <CardTitle className="text-sm font-medium">Open Leads</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{leadsCount || 0}</div>
-            <p className="text-xs text-muted-foreground">Leads in your pipeline</p>
+            <div className="text-2xl font-bold">{openLeadsCount || 0}</div>
+            <p className="text-xs text-muted-foreground">Active leads in your pipeline</p>
           </CardContent>
         </Card>
 
