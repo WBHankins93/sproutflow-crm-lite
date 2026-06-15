@@ -15,7 +15,7 @@ export default async function LeadsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Leads</h2>
+          <h2 className="font-display text-3xl font-semibold tracking-tight">Leads</h2>
           <p className="text-muted-foreground">Manage your leads</p>
         </div>
         <AddLeadDialog />

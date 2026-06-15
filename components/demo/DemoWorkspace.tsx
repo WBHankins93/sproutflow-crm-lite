@@ -200,7 +200,7 @@ export function DemoWorkspace() {
         <div className="flex h-16 items-center gap-2 border-b border-sidebar-border px-5">
           <Sprout className="h-6 w-6" />
           <div>
-            <p className="font-semibold">Sproutflow</p>
+            <p className="font-display text-lg font-semibold">Sproutflow</p>
             <p className="text-xs text-sidebar-foreground/70">CRM Lite Demo</p>
           </div>
         </div>

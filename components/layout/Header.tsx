@@ -10,7 +10,6 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { Logo } from './Logo'
 import { createClient } from '@/lib/supabase/client'
 import { getInitials } from '@/lib/utils'
 import { useRouter } from 'next/navigation'
@@ -43,9 +42,13 @@ export function Header() {
     router.push('/login')
   }
 
+  const firstName = user?.full_name?.split(' ')[0]
+
   return (
     <header className="sticky top-0 z-10 flex h-16 items-center gap-4 border-b bg-[var(--header)] px-6">
-      <div className="flex-1" />
+      <p className="flex-1 truncate text-sm text-muted-foreground">
+        {firstName ? `Welcome back, ${firstName}` : 'Welcome back'}
+      </p>
       <div className="flex items-center gap-4">
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -72,9 +75,6 @@ export function Header() {
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <div className="ml-4">
-          <Logo />
-        </div>
       </div>
     </header>
   )

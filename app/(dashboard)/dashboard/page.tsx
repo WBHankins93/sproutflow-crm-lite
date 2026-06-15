@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { createClient } from '@/lib/supabase/server'
+import { CalendarClock, Sprout, UserPlus, Users2, type LucideIcon } from 'lucide-react'
 import Link from 'next/link'
 
 export default async function DashboardPage() {
@@ -60,44 +61,66 @@ export default async function DashboardPage() {
     })),
   ].sort((a, b) => (a.follow_up_date || '').localeCompare(b.follow_up_date || ''))
 
+  const isEmpty = !clientsCount && !openLeadsCount
+
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <p className="text-muted-foreground">Welcome back! Here&apos;s what&apos;s happening.</p>
+        <h2 className="font-display text-3xl font-semibold tracking-tight">Dashboard</h2>
+        <p className="text-muted-foreground">Here&apos;s what&apos;s growing today.</p>
       </div>
-      
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Clients</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{clientsCount || 0}</div>
-            <p className="text-xs text-muted-foreground">Active clients in your CRM</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Open Leads</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{openLeadsCount || 0}</div>
-            <p className="text-xs text-muted-foreground">Active leads in your pipeline</p>
-          </CardContent>
-        </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Needs Follow-up</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">{followUps.length}</div>
-            <p className="text-xs text-muted-foreground">Due today or earlier</p>
+      <div className="grid gap-4 md:grid-cols-3">
+        <MetricCard
+          title="Total Clients"
+          value={clientsCount || 0}
+          detail="Active clients in your CRM"
+          icon={Users2}
+        />
+        <MetricCard
+          title="Open Leads"
+          value={openLeadsCount || 0}
+          detail="Active leads in your pipeline"
+          icon={UserPlus}
+        />
+        <MetricCard
+          title="Needs Follow-up"
+          value={followUps.length}
+          detail="Due today or earlier"
+          icon={CalendarClock}
+          emphasize={followUps.length > 0}
+        />
+      </div>
+
+      {isEmpty && (
+        <Card className="animate-rise-in border-dashed">
+          <CardContent className="flex flex-col items-center gap-3 py-12 text-center">
+            <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <Sprout className="h-6 w-6" />
+            </span>
+            <div>
+              <p className="font-medium">Plant your first record</p>
+              <p className="text-sm text-muted-foreground">
+                Add a lead or client to start tracking follow-ups.
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link
+                href="/leads"
+                className="rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              >
+                Add a lead
+              </Link>
+              <Link
+                href="/clients"
+                className="rounded-md border px-4 py-2 text-sm font-medium transition-colors hover:bg-accent hover:text-accent-foreground"
+              >
+                Add a client
+              </Link>
+            </div>
           </CardContent>
         </Card>
-      </div>
+      )}
 
       {followUps.length > 0 && (
         <Card>
@@ -213,5 +236,40 @@ export default async function DashboardPage() {
         )}
       </div>
     </div>
+  )
+}
+
+function MetricCard({
+  title,
+  value,
+  detail,
+  icon: Icon,
+  emphasize = false,
+}: {
+  title: string
+  value: number
+  detail: string
+  icon: LucideIcon
+  emphasize?: boolean
+}) {
+  return (
+    <Card className="animate-rise-in">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <CardTitle className="text-sm font-medium">{title}</CardTitle>
+        <span
+          className={
+            emphasize
+              ? 'flex h-8 w-8 items-center justify-center rounded-md bg-primary text-primary-foreground'
+              : 'flex h-8 w-8 items-center justify-center rounded-md bg-primary/10 text-primary'
+          }
+        >
+          <Icon className="h-4 w-4" />
+        </span>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-bold">{value}</div>
+        <p className="text-xs text-muted-foreground">{detail}</p>
+      </CardContent>
+    </Card>
   )
 }

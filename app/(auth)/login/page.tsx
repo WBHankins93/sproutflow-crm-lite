@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { Sprout } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -35,10 +37,20 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
-      <Card className="w-full max-w-md">
+    <div className="bg-brand-canvas flex min-h-screen flex-col items-center justify-center gap-6 p-4">
+      <div className="flex animate-rise-in items-center gap-3">
+        <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+          <Sprout className="h-6 w-6" />
+        </span>
+        <div className="leading-tight">
+          <p className="font-display text-xl font-semibold">Sproutflow</p>
+          <p className="text-xs text-muted-foreground">CRM Lite</p>
+        </div>
+      </div>
+
+      <Card className="w-full max-w-md animate-rise-in shadow-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">Welcome back</CardTitle>
+          <CardTitle className="font-display text-2xl">Welcome back</CardTitle>
           <CardDescription>Sign in to your CRM account</CardDescription>
         </CardHeader>
         <CardContent>
@@ -79,6 +91,13 @@ export default function LoginPage() {
           </form>
         </CardContent>
       </Card>
+
+      <p className="animate-rise-in text-sm text-muted-foreground">
+        No account?{' '}
+        <Link href="/demo" className="font-medium text-primary hover:underline">
+          Explore the live demo
+        </Link>
+      </p>
     </div>
   )
 }
