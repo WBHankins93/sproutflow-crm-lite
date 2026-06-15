@@ -102,11 +102,29 @@ types/database.ts                Hand-maintained Supabase database shape
 ## Verification
 
 ```bash
+npm audit
 npm run lint
 npm run build
+npm run test:smoke
 ```
 
-End-to-end smoke testing should cover login, dashboard, lead creation, lead notes, lead conversion, client editing, client notes, and sign out.
+The smoke test starts the production build locally and verifies:
+
+- `/demo` renders seeded walkthrough content
+- `/login` renders the sign-in form
+- protected routes redirect to `/login` without a session
+
+Authenticated end-to-end testing still requires a seeded Supabase project and test user.
+
+## Continuous Integration
+
+GitHub Actions runs the same public verification path on pull requests and pushes to `main`:
+
+- dependency install with `npm ci`
+- `npm audit`
+- `npm run lint`
+- `npm run build`
+- `npm run test:smoke`
 
 ## Roadmap
 
