@@ -11,6 +11,7 @@ import {
   LayoutDashboard,
   MessageSquare,
   Plus,
+  Sparkles,
   Sprout,
   Users,
   Users2,
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
+import { DemoTour, type TourStep } from './DemoTour'
 
 type Lead = {
   id: string
@@ -127,6 +129,7 @@ export function DemoWorkspace() {
   const [selectedLeadId, setSelectedLeadId] = useState(initialLeads[0].id)
   const [selectedClientId, setSelectedClientId] = useState(initialClients[0].id)
   const [noteDraft, setNoteDraft] = useState('')
+  const [tourOpen, setTourOpen] = useState(false)
 
   const selectedLead = leads.find((lead) => lead.id === selectedLeadId) || leads[0]
   const selectedClient = clients.find((client) => client.id === selectedClientId) || clients[0]
@@ -194,6 +197,49 @@ export function DemoWorkspace() {
     setActiveView('clients')
   }
 
+  const tourSteps: TourStep[] = [
+    {
+      key: 'followups',
+      title: '1 · Review follow-ups',
+      body: 'The dashboard surfaces who needs attention today so nothing slips.',
+      anchor: 'followups',
+      onEnter: () => setActiveView('dashboard'),
+    },
+    {
+      key: 'open-lead',
+      title: '2 · Open a lead',
+      body: 'Browse your pipeline and open a lead to see its full detail panel.',
+      anchor: 'records',
+      placement: 'bottom-right',
+      onEnter: () => {
+        setActiveView('leads')
+        setSelectedLeadId(initialLeads[0].id)
+      },
+    },
+    {
+      key: 'add-note',
+      title: '3 · Add a note',
+      body: 'Capture context as you go — notes save instantly against the record.',
+      anchor: 'notes',
+      placement: 'bottom-left',
+      onEnter: () => {
+        setActiveView('leads')
+        setSelectedLeadId(initialLeads[0].id)
+      },
+    },
+    {
+      key: 'convert',
+      title: '4 · Convert to client',
+      body: 'When a lead is ready, convert it into a client in one click.',
+      anchor: 'convert',
+      placement: 'bottom-left',
+      onEnter: () => {
+        setActiveView('leads')
+        setSelectedLeadId(initialLeads[0].id)
+      },
+    },
+  ]
+
   return (
     <div className="flex min-h-screen bg-background">
       <aside className="hidden w-64 border-r bg-sidebar text-sidebar-foreground md:flex md:flex-col">
@@ -230,6 +276,10 @@ export function DemoWorkspace() {
             <p className="text-sm text-muted-foreground">Seeded walkthrough data. No login required.</p>
           </div>
           <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setTourOpen(true)}>
+              <Sparkles className="mr-2 h-4 w-4" />
+              Take the tour
+            </Button>
             <Button variant="outline" asChild>
               <Link href="/login">Sign in</Link>
             </Button>
@@ -243,7 +293,7 @@ export function DemoWorkspace() {
           <section className="grid gap-4 md:grid-cols-3">
             <MetricCard title="Clients" value={clients.length} detail="Active relationship records" />
             <MetricCard title="Leads" value={leads.length} detail="Pipeline contacts" />
-            <MetricCard title="Follow-ups" value={followUpCount} detail="Due today" />
+            <MetricCard title="Follow-ups" value={followUpCount} detail="Due today" anchor="followups" />
           </section>
 
           {activeView === 'dashboard' && (
@@ -325,13 +375,25 @@ export function DemoWorkspace() {
           )}
         </div>
       </main>
+
+      <DemoTour steps={tourSteps} open={tourOpen} onClose={() => setTourOpen(false)} />
     </div>
   )
 }
 
-function MetricCard({ title, value, detail }: { title: string; value: number; detail: string }) {
+function MetricCard({
+  title,
+  value,
+  detail,
+  anchor,
+}: {
+  title: string
+  value: number
+  detail: string
+  anchor?: string
+}) {
   return (
-    <Card>
+    <Card data-tour={anchor}>
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-medium">{title}</CardTitle>
       </CardHeader>
@@ -356,7 +418,7 @@ function RecordWorkspace<T extends Lead | Client>({
 }) {
   return (
     <section className="grid gap-4 lg:grid-cols-[360px_1fr]">
-      <Card>
+      <Card data-tour="records">
         <CardHeader>
           <CardTitle>Records</CardTitle>
         </CardHeader>
@@ -409,7 +471,7 @@ function LeadDetail({
             <CardTitle>{lead.name}</CardTitle>
             <p className="mt-1 text-sm text-muted-foreground">{lead.email} - {lead.phone}</p>
           </div>
-          <Button onClick={convertLead} disabled={lead.status === 'converted'}>
+          <Button data-tour="convert" onClick={convertLead} disabled={lead.status === 'converted'}>
             <ArrowRightLeft className="mr-2 h-4 w-4" />
             Convert
           </Button>
@@ -473,7 +535,7 @@ function NotesComposer({
   addNote: () => void
 }) {
   return (
-    <div className="space-y-3">
+    <div className="space-y-3" data-tour="notes">
       <div className="flex items-center gap-2">
         <MessageSquare className="h-4 w-4 text-muted-foreground" />
         <h2 className="font-medium">Notes</h2>
