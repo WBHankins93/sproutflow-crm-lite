@@ -26,12 +26,22 @@ npm install
 npm run dev
 ```
 
-Then open **[localhost:3000/demo](http://localhost:3000/demo)** and:
+Then open **[localhost:3000/demo](http://localhost:3000/demo)** and either explore freely or click **Take the tour** for a guided, four-step walkthrough:
 
 - 📊 Review dashboard metrics and follow-ups
 - 👥 Browse seeded leads and clients
 - 📝 Add demo notes
 - 🔄 Convert a lead into a client
+
+### 🎬 Visual walkthrough
+
+| Dashboard | Leads |
+|---|---|
+| ![Demo dashboard with client, lead, and follow-up metrics](docs/screenshots/demo-dashboard.png) | ![Lead detail with contact info, status, and notes](docs/screenshots/demo-leads.png) |
+| **Clients** | **Guided tour** |
+| ![Client detail with company, status, and notes](docs/screenshots/demo-clients.png) | ![Guided tour highlighting the follow-ups card](docs/screenshots/demo-tour.png) |
+
+> Regenerate these with `node scripts/capture-demo-screenshots.mjs` (see the script header for the one-time Playwright setup).
 
 ---
 
@@ -46,6 +56,7 @@ Then open **[localhost:3000/demo](http://localhost:3000/demo)** and:
 | 🗒️ **Notes** | Timestamped notes on any lead or client |
 | ⚙️ **Settings** | Team-member visibility |
 | 🌿 **Public demo** | Seeded `/demo` walkthrough, no login needed |
+| 🎬 **Guided tour** | "Take the tour" walks first-timers through the core loop on the demo |
 
 **Intentionally out of scope** for the lite edition: deals pipeline, document storage, commissions, messaging, policy tracking, carrier access, advanced reporting, and advanced team administration.
 
